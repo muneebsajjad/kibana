@@ -34,18 +34,18 @@ sed -i "s|/opt/local-ssd/buildkite/builds/kb-[[:alnum:]\-]\{20,27\}/elastic/kiba
 echo $BUILDKITE_BUILD_ID
 echo "--- Jest: merging coverage files and generating the final combined report"
 yarn nyc report --nycrc-path src/dev/code_coverage/nyc_config/nyc.jest.config.js
-rm -rf target/kibana-coverage/jest
+rm -rf target/kibana-coverage/jest && mkdir target/kibana-coverage/jest
 
 sed -i "s|/opt/local-ssd/buildkite/builds/kb-cigroup-4d-[[:xdigit:]]\{16\}/elastic/kibana-code-coverage-main/kibana|${KIBANA_DIR}|g" $COVERAGE_TEMP_DIR/functional/*.json
 echo "### Functional: merging json files and generating the final combined report"
 yarn nyc report --nycrc-path src/dev/code_coverage/nyc_config/nyc.functional.config.js
-rm -rf target/kibana-coverage/functional
+rm -rf target/kibana-coverage/functional && mkdir target/kibana-coverage/functional
 
 # archive reports to upload as build artifacts
 echo "--- Archive combined functional report"
-tar -czf kibana-functional-coverage.tar.gz target/kibana-coverage/functional-combined
+tar -czf target/kibana-coverage/functional/kibana-functional-coverage.tar.gz target/kibana-coverage/functional-combined
 echo "--- Archive combined jest report"
-tar -czf kibana-jest-coverage.tar.gz target/kibana-coverage/jest-combined
+tar -czf target/kibana-coverage/jest/kibana-jest-coverage.tar.gz target/kibana-coverage/jest-combined
 
 # upload combined reports
 ls -laR target/kibana-coverage/
